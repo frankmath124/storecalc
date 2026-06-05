@@ -171,22 +171,21 @@ with tab_event:
     st.subheader("🌊 Wavebound Voyage Chest Probability Matrix")
     
     # -----------------------------------------------------------------
-    # ADVANCED LOGIC: STOCHASTIC CHEST MERGE MATH ENGINE
+    # ADVANCED LOGIC: STOCHASTIC CHEST MERGE MATH ENGINE (LOWERCASE PROTECTED)
     # -----------------------------------------------------------------
     
-    # 1. Compile Raw Contents Values from Spreadsheet Specifications
-    v_charms_common  = (computed_true_values["charm design"] * 3) + (computed_true_values["100 gems"] * 2) + (computed_true_values["5 min speedup"] * 12)
-    v_charms_premium = (computed_true_values["charm design"] * 6) + (computed_true_values["charm guide"] * 3) + (computed_true_values["1hr speedup"] * 4)
-    v_charms_exq     = (computed_true_values["charm design"] * 9) + (computed_true_values["charm guide"] * 9) + (computed_true_values["general mythic shard"] * 2)
-    v_charms_mythic  = (computed_true_values["charm design"] * 30) + (computed_true_values["charm guide"] * 30) + (computed_true_values["general mythic shard"] * 6)
+    # 1. Compile Raw Contents Values from Spreadsheet Specifications using uniform lowercase lookups
+    v_charms_common  = (computed_true_values.get("charm design", 0) * 3) + (computed_true_values.get("100 gems", 0) * 2) + (computed_true_values.get("5 min speedup", 0) * 12)
+    v_charms_premium = (computed_true_values.get("charm design", 0) * 6) + (computed_true_values.get("charm guide", 0) * 3) + (computed_true_values.get("1hr speedup", 0) * 4)
+    v_charms_exq     = (computed_true_values.get("charm design", 0) * 9) + (computed_true_values.get("charm guide", 0) * 9) + (computed_true_values.get("general mythic shard", 0) * 2)
+    v_charms_mythic  = (computed_true_values.get("charm design", 0) * 30) + (computed_true_values.get("charm guide", 0) * 30) + (computed_true_values.get("general mythic shard", 0) * 6)
     
-    v_gear_common  = (computed_true_values["thread"] * 14) + (computed_true_values["satin"] * 900) + (computed_true_values["5 min speedup"] * 12)
-    v_gear_premium = (computed_true_values["thread"] * 35) + (computed_true_values["satin"] * 3500) + (computed_true_values["1hr speedup"] * 3)
-    v_gear_exq     = (computed_true_values["gear chest"] * 7) + (computed_true_values["artisan vision"] * 8) + (computed_true_values["general mythic shard"] * 2)
-    v_gear_mythic  = (computed_true_values["gear chest"] * 21) + (computed_true_values["artisan vision"] * 21) + (computed_true_values["general mythic shard"] * 6)
+    v_gear_common  = (computed_true_values.get("thread", 0) * 14) + (computed_true_values.get("satin", 0) * 900) + (computed_true_values.get("5 min speedup", 0) * 12)
+    v_gear_premium = (computed_true_values.get("thread", 0) * 35) + (computed_true_values.get("satin", 0) * 3500) + (computed_true_values.get("1hr speedup", 0) * 3)
+    v_gear_exq     = (computed_true_values.get("gear chest", 0) * 7) + (computed_true_values.get("artisan vision", 0) * 8) + (computed_true_values.get("general mythic shard", 0) * 2)
+    v_gear_mythic  = (computed_true_values.get("gear chest", 0) * 21) + (computed_true_values.get("artisan vision", 0) * 21) + (computed_true_values.get("general mythic shard", 0) * 6)
 
     # 2. Run Backwards Induction Expected Value Calculations
-    # Expected Premium value evaluates opening vs merging (3 premiums yield 75% Exq + 25% Mythic)
     merge_premium_target_charms = ((0.75 * v_charms_exq) + (0.25 * v_charms_mythic)) / 3.0
     ev_charms_premium = max(v_charms_premium, merge_premium_target_charms)
     ev_charms_common  = max(v_charms_common, ev_charms_premium / 3.0)
