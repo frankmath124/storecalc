@@ -4,27 +4,27 @@ import pandas as pd
 st.set_page_config(page_title="Store Economy Engine", layout="wide")
 
 st.title("Dynamic Store Economy & Priority Engine")
-st.caption("Centralized ledger to calculate Universal Buy Scores across all currencies.")
+st.caption("Centralized ledger with fully automated Scarcity and Demand calculations.")
 
 # =========================================================================
 # 1. THE INVENTORY LEDGER (Dynamic Data Editor)
 # =========================================================================
 st.subheader("1. Live Inventory Ledger")
-st.markdown("Update your current inventory. The engine will dynamically adjust Demand and show you the final Modified Gem Value.")
+st.markdown("Update your current inventory. The engine automatically calculates **Scarcity** and **Demand** loops natively.")
 
-# Preloaded with your core database values from spreadsheet architecture (Pet Medallion Removed)
+# Database anchored with structural acquisition limits to calculate true scarcity dynamically
 if "inventory_data" not in st.session_state:
     st.session_state.inventory_data = [
-        {"Item": "Artisan Vision", "Inventory": 100, "Goal": 150, "Base Gem Value": 1000, "Scarcity Index": 45.45},
-        {"Item": "Satin", "Inventory": 50000, "Goal": 75000, "Base Gem Value": 2, "Scarcity Index": 0.01},
-        {"Item": "Thread", "Inventory": 500, "Goal": 650, "Base Gem Value": 200, "Scarcity Index": 6.67},
-        {"Item": "Mithril", "Inventory": 5, "Goal": 20, "Base Gem Value": 10000, "Scarcity Index": 1000.0},
-        {"Item": "Forgehammer", "Inventory": 40, "Goal": 500, "Base Gem Value": 2500, "Scarcity Index": 28.57},
-        {"Item": "Hero Widget", "Inventory": 45, "Goal": 50, "Base Gem Value": 5000, "Scarcity Index": 200.0},
-        {"Item": "General Mythic Shard", "Inventory": 450, "Goal": 1000, "Base Gem Value": 5000, "Scarcity Index": 45.45},
-        {"Item": "Truegold", "Inventory": 1200, "Goal": 1500, "Base Gem Value": 500, "Scarcity Index": 20.0},
-        {"Item": "Charm Design", "Inventory": 500, "Goal": 600, "Base Gem Value": 1000, "Scarcity Index": 15.38},
-        {"Item": "Charm Guide", "Inventory": 500, "Goal": 1200, "Base Gem Value": 1000, "Scarcity Index": 22.22},
+        {"Item": "Satin", "Inventory": 50000, "Goal": 75000, "Base Gem Value": 2, "Weekly Limit": 102500, "Global Sources": 3},
+        {"Item": "Thread", "Inventory": 500, "Goal": 650, "Base Gem Value": 200, "Weekly Limit": 150, "Global Sources": 3},
+        {"Item": "Forgehammer", "Inventory": 40, "Goal": 500, "Base Gem Value": 2500, "Weekly Limit": 35, "Global Sources": 4},
+        {"Item": "Hero Widget", "Inventory": 45, "Goal": 50, "Base Gem Value": 5000, "Weekly Limit": 5, "Global Sources": 1},
+        {"Item": "General Mythic Shard", "Inventory": 450, "Goal": 1000, "Base Gem Value": 5000, "Weekly Limit": 22, "Global Sources": 6},
+        {"Item": "Truegold", "Inventory": 1200, "Goal": 1500, "Base Gem Value": 500, "Weekly Limit": 50, "Global Sources": 1},
+        {"Item": "Artisan Vision", "Inventory": 100, "Goal": 150, "Base Gem Value": 1000, "Weekly Limit": 22, "Global Sources": 4},
+        {"Item": "Charm Design", "Inventory": 500, "Goal": 600, "Base Gem Value": 1000, "Weekly Limit": 65, "Global Sources": 4},
+        {"Item": "Charm Guide", "Inventory": 500, "Goal": 1200, "Base Gem Value": 1000, "Weekly Limit": 45, "Global Sources": 4},
+        {"Item": "Mithril", "Inventory": 5, "Goal": 20, "Base Gem Value": 10000, "Weekly Limit": 1, "Global Sources": 1}
     ]
 
 display_ledger_data = []
@@ -32,14 +32,27 @@ computed_true_values = {}
 
 for row in st.session_state.inventory_data:
     item_lower = row["Item"].lower()
+    
+    # 1. Automated Demand Index Calculation
     demand_multiplier = max(0.0, (row["Goal"] - row["Inventory"]) / row["Goal"])
     demand_index = demand_multiplier * 10
-    mod_gem_value = row["Base Gem Value"] * demand_index * row["Scarcity Index"]
+    
+    # 2. Automated Scarcity Index Calculation (Inversely proportional to availability limits)
+    # Scaled by a factor of 1000 to cleanly normalize the final priority scores
+    scarcity_index = (1.0 / (row["Weekly Limit"] * row["Global Sources"])) * 1000.0
+    
+    # 3. Dynamic Modified Gem Value
+    mod_gem_value = row["Base Gem Value"] * demand_index * scarcity_index
     computed_true_values[item_lower] = mod_gem_value
     
     display_ledger_data.append({
-        "Item": row["Item"], "Inventory": row["Inventory"], "Goal": row["Goal"],
-        "Base Gem Value": row["Base Gem Value"], "Demand Index": demand_index, "Modified Gem Value": mod_gem_value
+        "Item": row["Item"],
+        "Inventory": row["Inventory"],
+        "Goal": row["Goal"],
+        "Base Gem Value": row["Base Gem Value"],
+        "Calculated Scarcity": scarcity_index,
+        "Demand Index": demand_index,
+        "Modified Gem Value": mod_gem_value
     })
 
 edited_inv = st.data_editor(
@@ -49,6 +62,7 @@ edited_inv = st.data_editor(
         "Inventory": st.column_config.NumberColumn("Current Inventory", min_value=0),
         "Goal": st.column_config.NumberColumn("Target Goal", min_value=1),
         "Base Gem Value": st.column_config.NumberColumn("Base Gem Value", disabled=True, format="%d"),
+        "Calculated Scarcity": st.column_config.NumberColumn("Calculated Scarcity (SI)", disabled=True, format="%.4f"),
         "Demand Index": st.column_config.NumberColumn("Demand Index (DI)", disabled=True, format="%.2f"),
         "Modified Gem Value": st.column_config.NumberColumn("Modified Gem Value", disabled=True, format="%.1f")
     }, hide_index=True, use_container_width=True
@@ -58,19 +72,17 @@ for idx, row in enumerate(edited_inv):
     st.session_state.inventory_data[idx]["Inventory"] = row["Inventory"]
     st.session_state.inventory_data[idx]["Goal"] = row["Goal"]
 
-# Seed flat asset constants & apply frozen baselines to eliminate table clutter
+# Background constants and streamlined dependencies
 computed_true_values["5 min speedup"] = 66.0 / 12.0
 computed_true_values["1hr speedup"] = 800.0
 computed_true_values["100 gems"] = 100.0
 computed_true_values["mythic hero gear"] = 12000.0
 computed_true_values["mythril"] = computed_true_values.get("mythril", 0) or 10000.0
-
-# Fixed Background Optimization Indexes (From spreadsheet captures)
 computed_true_values["gear chest"] = 15600.0
 computed_true_values["g1 widget"] = 2890000.0
 computed_true_values["g2 widget"] = 3400000.0
 computed_true_values["taming mark advanced"] = 4500000.0
-computed_true_values["pet medallion"] = 54000.0  # Anchored general background value weight
+computed_true_values["pet medallion"] = 54000.0
 
 # =========================================================================
 # NAVIGATION ARCHITECTURE (TABS)
