@@ -29,6 +29,7 @@ if "inventory_data" not in st.session_state:
         {"Item": "G1 Widget", "Inventory": 5, "Goal": 50, "Base Gem Value": 3612, "Scarcity Index": 200.0},
         {"Item": "G2 Widget", "Inventory": 2, "Goal": 50, "Base Gem Value": 4250, "Scarcity Index": 200.0},
         {"Item": "Gear Chest", "Inventory": 10, "Goal": 100, "Base Gem Value": 2600, "Scarcity Index": 90.0}
+        {"Item": "Mithril", "Inventory": 5, "Goal": 20, "Base Gem Value": 10000, "Scarcity Index": 1000.0}
     ]
 
 display_ledger_data = []
