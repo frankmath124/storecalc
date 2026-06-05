@@ -82,7 +82,7 @@ computed_true_values["5 min speedup"] = 66.0 / 12.0
 computed_true_values["1hr speedup"] = 800.0
 computed_true_values["100 gems"] = 100.0
 computed_true_values["mythic hero gear"] = 12000.0
-computed_true_values["mythril"] = computed_true_values.get("mythril", 0) or 10000.0
+computed_true_values["mithril"] = computed_true_values.get("mithril", 0) or 10000.0
 computed_true_values["gear chest"] = 15600.0
 computed_true_values["g1 widget"] = 2890000.0
 computed_true_values["g2 widget"] = 3400000.0
@@ -120,7 +120,7 @@ with tab_std:
             "charm design": 6, "charm guide": 6
         },
         "Trial Shop (Trial Crystals)": {
-            "mythril": 2500, "general mythic shard": 500, "charm design": 250, "charm guide": 250
+            "mithril": 2500, "general mythic shard": 500, "charm design": 250, "charm guide": 250
         },
         "Tidal Shop (Tidal Coins)": {
             "satin": 1, "thread": 100, "forgehammer": 1250, "general mythic shard": 2500, 
