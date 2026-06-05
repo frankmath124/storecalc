@@ -12,20 +12,19 @@ st.caption("Centralized ledger to calculate Universal Buy Scores across all curr
 st.subheader("1. Live Inventory Ledger")
 st.markdown("Update your current inventory. The engine will dynamically adjust Demand and show you the final Modified Gem Value.")
 
-# Preloaded with your core database values from spreadsheet architecture (Streamlined Ledger)
+# Preloaded with your core database values from spreadsheet architecture (Pet Medallion Removed)
 if "inventory_data" not in st.session_state:
     st.session_state.inventory_data = [
+        {"Item": "Artisan Vision", "Inventory": 100, "Goal": 150, "Base Gem Value": 1000, "Scarcity Index": 45.45},
         {"Item": "Satin", "Inventory": 50000, "Goal": 75000, "Base Gem Value": 2, "Scarcity Index": 0.01},
         {"Item": "Thread", "Inventory": 500, "Goal": 650, "Base Gem Value": 200, "Scarcity Index": 6.67},
+        {"Item": "Mithril", "Inventory": 5, "Goal": 20, "Base Gem Value": 10000, "Scarcity Index": 1000.0},
         {"Item": "Forgehammer", "Inventory": 40, "Goal": 500, "Base Gem Value": 2500, "Scarcity Index": 28.57},
         {"Item": "Hero Widget", "Inventory": 45, "Goal": 50, "Base Gem Value": 5000, "Scarcity Index": 200.0},
         {"Item": "General Mythic Shard", "Inventory": 450, "Goal": 1000, "Base Gem Value": 5000, "Scarcity Index": 45.45},
         {"Item": "Truegold", "Inventory": 1200, "Goal": 1500, "Base Gem Value": 500, "Scarcity Index": 20.0},
-        {"Item": "Pet Medallion", "Inventory": 50, "Goal": 60, "Base Gem Value": 3000, "Scarcity Index": 166.67},
-        {"Item": "Artisan Vision", "Inventory": 100, "Goal": 150, "Base Gem Value": 1000, "Scarcity Index": 45.45},
         {"Item": "Charm Design", "Inventory": 500, "Goal": 600, "Base Gem Value": 1000, "Scarcity Index": 15.38},
         {"Item": "Charm Guide", "Inventory": 500, "Goal": 1200, "Base Gem Value": 1000, "Scarcity Index": 22.22},
-        {"Item": "Mithril", "Inventory": 5, "Goal": 20, "Base Gem Value": 10000, "Scarcity Index": 1000.0}
     ]
 
 display_ledger_data = []
@@ -71,6 +70,7 @@ computed_true_values["gear chest"] = 15600.0
 computed_true_values["g1 widget"] = 2890000.0
 computed_true_values["g2 widget"] = 3400000.0
 computed_true_values["taming mark advanced"] = 4500000.0
+computed_true_values["pet medallion"] = 54000.0  # Anchored general background value weight
 
 # =========================================================================
 # NAVIGATION ARCHITECTURE (TABS)
