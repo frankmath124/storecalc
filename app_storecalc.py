@@ -12,7 +12,7 @@ st.caption("Centralized ledger to calculate Universal Buy Scores across all curr
 st.subheader("1. Live Inventory Ledger")
 st.markdown("Update your current inventory. The engine will dynamically adjust Demand and show you the final Modified Gem Value.")
 
-# Preloaded with your core database values from spreadsheet architecture
+# Preloaded with your core database values from spreadsheet architecture (Streamlined Ledger)
 if "inventory_data" not in st.session_state:
     st.session_state.inventory_data = [
         {"Item": "Satin", "Inventory": 50000, "Goal": 75000, "Base Gem Value": 2, "Scarcity Index": 0.01},
@@ -22,13 +22,9 @@ if "inventory_data" not in st.session_state:
         {"Item": "General Mythic Shard", "Inventory": 450, "Goal": 1000, "Base Gem Value": 5000, "Scarcity Index": 45.45},
         {"Item": "Truegold", "Inventory": 1200, "Goal": 1500, "Base Gem Value": 500, "Scarcity Index": 20.0},
         {"Item": "Pet Medallion", "Inventory": 50, "Goal": 60, "Base Gem Value": 3000, "Scarcity Index": 166.67},
-        {"Item": "Taming Mark Advanced", "Inventory": 10, "Goal": 10, "Base Gem Value": 6000, "Scarcity Index": 250.0},
         {"Item": "Artisan Vision", "Inventory": 100, "Goal": 150, "Base Gem Value": 1000, "Scarcity Index": 45.45},
         {"Item": "Charm Design", "Inventory": 500, "Goal": 600, "Base Gem Value": 1000, "Scarcity Index": 15.38},
         {"Item": "Charm Guide", "Inventory": 500, "Goal": 1200, "Base Gem Value": 1000, "Scarcity Index": 22.22},
-        {"Item": "G1 Widget", "Inventory": 5, "Goal": 50, "Base Gem Value": 3612, "Scarcity Index": 200.0},
-        {"Item": "G2 Widget", "Inventory": 2, "Goal": 50, "Base Gem Value": 4250, "Scarcity Index": 200.0},
-        {"Item": "Gear Chest", "Inventory": 10, "Goal": 100, "Base Gem Value": 2600, "Scarcity Index": 90.0}
         {"Item": "Mithril", "Inventory": 5, "Goal": 20, "Base Gem Value": 10000, "Scarcity Index": 1000.0}
     ]
 
@@ -63,12 +59,18 @@ for idx, row in enumerate(edited_inv):
     st.session_state.inventory_data[idx]["Inventory"] = row["Inventory"]
     st.session_state.inventory_data[idx]["Goal"] = row["Goal"]
 
-# Seed standalone asset weights
+# Seed flat asset constants & apply frozen baselines to eliminate table clutter
 computed_true_values["5 min speedup"] = 66.0 / 12.0
 computed_true_values["1hr speedup"] = 800.0
 computed_true_values["100 gems"] = 100.0
-computed_true_values["mythril"] = 10000.0
 computed_true_values["mythic hero gear"] = 12000.0
+computed_true_values["mythril"] = computed_true_values.get("mythril", 0) or 10000.0
+
+# Fixed Background Optimization Indexes (From spreadsheet captures)
+computed_true_values["gear chest"] = 15600.0
+computed_true_values["g1 widget"] = 2890000.0
+computed_true_values["g2 widget"] = 3400000.0
+computed_true_values["taming mark advanced"] = 4500000.0
 
 # =========================================================================
 # NAVIGATION ARCHITECTURE (TABS)
@@ -79,7 +81,7 @@ tab_std, tab_event = st.tabs(["🏛️ Permanent Shops", "🎪 Limited-Time Even
 hide_completed = st.sidebar.checkbox("Hide Items with 0 Priority", value=True)
 
 # =========================================================================
-# TAB 1: PERMANENT SHOPS (All 7 Main Shops Synced)
+# TAB 1: PERMANENT SHOPS
 # =========================================================================
 with tab_std:
     st.subheader("Standard Resource Exchanges")
