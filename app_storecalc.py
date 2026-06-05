@@ -3,14 +3,14 @@ import pandas as pd
 
 st.set_page_config(page_title="Store Economy Engine", layout="wide")
 
-st.title("🏪 FRANK-Optimizer: Store Economy Suite")
+st.title("FRANK-Optimizer: Store Economy Suite")
 st.caption("Centralized inventory ledger calculating live priority scores across standard and event shops.")
 
 # =========================================================================
 # 1. THE INVENTORY LEDGER (Dynamic Data Editor)
 # =========================================================================
 st.subheader("1. Live Inventory Ledger")
-st.markdown("Update your stock. The engine computes your live **Modified Gem Value** ($Base \times DI \times SI$) natively.")
+st.markdown("Update your stock. The engine computes your live **Modified Gem Value** ($Base x DI x SI$) natively.")
 
 if "inventory_data" not in st.session_state:
     st.session_state.inventory_data = [
@@ -121,13 +121,13 @@ with tab_std:
 # TAB 2: LIMITED-TIME EVENT SHOPS
 # =========================================================================
 with tab_event:
-    st.subheader("🎪 Active Special Event Operations")
+    st.subheader("Active Special Event Operations")
     
     ev_col1, ev_col2 = st.columns([1, 1])
     
     # --- SHOP A: ELYSIUM EXCHANGE ---
     with ev_col1:
-        st.markdown("### 🏆 Elysium Shop Exchange Priority")
+        st.markdown("### Elysium Shop Exchange Priority")
         elysium_shop = {
             "forgehammer": 40, "artisan vision": 15, "charm design": 22, 
             "charm guide": 22, "truegold": 15, "gear chest": 42, "general mythic shard": 75
@@ -147,7 +147,7 @@ with tab_event:
 
     # --- SHOP B: CHAMPAGNE EXPEDITION ---
     with ev_col2:
-        st.markdown("### 🍾 Champagne Bundle Packs Value Mapping")
+        st.markdown("### Champagne Bundle Packs Value Mapping")
         champagne_shop = {
             "hero widget": 10, "g2 widget": 10, "g1 widget": 10, "forgehammer": 10,
             "pet medallion": 5, "taming mark advanced": 2, "general mythic shard": 10,
@@ -168,7 +168,7 @@ with tab_event:
             st.info("Champagne value markers hitting zero bounds.")
 
     st.markdown("---")
-    st.subheader("🌊 Wavebound Voyage Chest Probability Matrix")
+    st.subheader("Wavebound Voyage Chest Probability Matrix")
     
     # -----------------------------------------------------------------
     # ADVANCED LOGIC: STOCHASTIC CHEST MERGE MATH ENGINE (LOWERCASE PROTECTED)
@@ -201,4 +201,4 @@ with tab_event:
     ]
     
     st.table(pd.DataFrame(chest_matrix_display).set_index("Event Track"))
-    st.info("💡 **Strategy Tracker System Insight:** If 'Merge Action Advice' switches variants, it indicates your inventory demand profile has heavily altered the probability value weights. Merge actions optimize dynamically based on shortages.")
+    st.info("**Strategy Tracker System Insight:** If 'Merge Action Advice' switches variants, it indicates your inventory demand profile has heavily altered the probability value weights. Merge actions optimize dynamically based on shortages.")
