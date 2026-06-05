@@ -1,18 +1,15 @@
 import streamlit as st
 import pandas as pd
+import math
 
 st.set_page_config(page_title="Store Economy Engine", layout="wide")
 
-st.title("Dynamic Store Economy & Priority Engine")
-st.caption("Centralized ledger with fully automated Scarcity and Demand calculations.")
+st.title("🏪 Dynamic Store Economy & IVS Engine")
+st.caption("Centralized ledger using Intrinsic Value Scores and Logarithmic Scarcity normalization.")
 
 # =========================================================================
-# 1. THE INVENTORY LEDGER (Dynamic Data Editor)
+# 1. INITIALIZATION & LEDGER
 # =========================================================================
-st.subheader("1. Live Inventory Ledger")
-st.markdown("Update your current inventory. The engine automatically calculates **Scarcity** and **Demand** loops natively.")
-
-# Database anchored with structural acquisition limits to calculate true scarcity dynamically
 if "inventory_data" not in st.session_state:
     st.session_state.inventory_data = [
         {"Item": "Satin", "Inventory": 50000, "Goal": 75000, "Base Gem Value": 2, "Weekly Limit": 102500, "Global Sources": 3},
@@ -27,68 +24,42 @@ if "inventory_data" not in st.session_state:
         {"Item": "Mithril", "Inventory": 5, "Goal": 20, "Base Gem Value": 10000, "Weekly Limit": 1, "Global Sources": 1}
     ]
 
+# Calculate display ledger & IVS simultaneously
 display_ledger_data = []
-# =========================================================================
-# 2. BACKGROUND MATH ENGINE (Robust Dictionary Lookup)
-# =========================================================================
 computed_true_values = {}
 
-# Use the source of truth (st.session_state.inventory_data) for the math, 
-# not the potentially partial output of st.data_editor
 for row in st.session_state.inventory_data:
     item_lower = row["Item"].lower()
     
-    # 1. Automated Demand Index Calculation
-    demand_multiplier = max(0.0, (row["Goal"] - row["Inventory"]) / row["Goal"])
-    demand_index = demand_multiplier * 10
-    
-    # 2. Automated Scarcity Index Calculation
-    # Accessing keys directly from the dictionary source of truth
+    # Logic: Demand (Linear) * Log Scarcity
+    demand_index = max(0.0, (row["Goal"] - row["Inventory"]) / row["Goal"]) * 10
     scarcity_index = (1.0 / (row["Weekly Limit"] * row["Global Sources"])) * 1000.0
+    log_si = math.log10(max(scarcity_index, 1.1))
     
-    # 3. Dynamic Modified Gem Value
-    mod_gem_value = row["Base Gem Value"] * demand_index * scarcity_index
+    mod_gem_value = row["Base Gem Value"] * demand_index * log_si
     computed_true_values[item_lower] = mod_gem_value
     
     display_ledger_data.append({
-        "Item": row["Item"],
-        "Inventory": row["Inventory"],
-        "Goal": row["Goal"],
-        "Base Gem Value": row["Base Gem Value"],
-        "Calculated Scarcity": scarcity_index,
-        "Demand Index": demand_index,
-        "Modified Gem Value": mod_gem_value
+        "Item": row["Item"], "Inventory": row["Inventory"], "Goal": row["Goal"],
+        "Base Gem Value": row["Base Gem Value"], "Calculated Scarcity": scarcity_index,
+        "Demand Index": demand_index, "Modified Gem Value": mod_gem_value
     })
 
-edited_inv = st.data_editor(
-    display_ledger_data,
-    column_config={
-        "Item": st.column_config.TextColumn("Item", disabled=True),
-        "Inventory": st.column_config.NumberColumn("Current Inventory", min_value=0),
-        "Goal": st.column_config.NumberColumn("Target Goal", min_value=1),
-        "Base Gem Value": st.column_config.NumberColumn("Base Gem Value", disabled=True, format="%d"),
-        "Calculated Scarcity": st.column_config.NumberColumn("Calculated Scarcity (SI)", disabled=True, format="%.4f"),
-        "Demand Index": st.column_config.NumberColumn("Demand Index (DI)", disabled=True, format="%.2f"),
-        "Modified Gem Value": st.column_config.NumberColumn("Modified Gem Value", disabled=True, format="%.1f")
-    }, hide_index=True, use_container_width=True
-)
-
+# Render Editor
+edited_inv = st.data_editor(display_ledger_data, hide_index=True, use_container_width=True)
 for idx, row in enumerate(edited_inv):
     st.session_state.inventory_data[idx]["Inventory"] = row["Inventory"]
     st.session_state.inventory_data[idx]["Goal"] = row["Goal"]
 
-# Background constants and streamlined dependencies
-computed_true_values["5 min speedup"] = 66.0 / 12.0
-computed_true_values["1hr speedup"] = 800.0
+# Add Background Constants
+computed_true_values["5 min speedup"] = 0.5
+computed_true_values["1hr speedup"] = 60
 computed_true_values["100 gems"] = 100.0
-computed_true_values["mythic hero gear"] = 12000.0
-computed_true_values["mithril"] = computed_true_values.get("mithril", 0) or 10000.0
-computed_true_values["gear chest"] = 15600.0
-computed_true_values["g1 widget"] = 2890000.0
-computed_true_values["g2 widget"] = 3400000.0
-computed_true_values["taming mark advanced"] = 4500000.0
-computed_true_values["pet medallion"] = 54000.0
-
+computed_true_values["gear chest"] = 500
+computed_true_values["g1 widget"] = 3600
+computed_true_values["g2 widget"] = 4500
+computed_true_values["taming mark advanced"] = 4500.0
+computed_true_values["pet medallion"] = 1500
 # =========================================================================
 # NAVIGATION ARCHITECTURE (TABS)
 # =========================================================================
