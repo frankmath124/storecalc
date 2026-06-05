@@ -28,8 +28,13 @@ if "inventory_data" not in st.session_state:
     ]
 
 display_ledger_data = []
+# =========================================================================
+# 2. BACKGROUND MATH ENGINE (Robust Dictionary Lookup)
+# =========================================================================
 computed_true_values = {}
 
+# Use the source of truth (st.session_state.inventory_data) for the math, 
+# not the potentially partial output of st.data_editor
 for row in st.session_state.inventory_data:
     item_lower = row["Item"].lower()
     
@@ -37,8 +42,8 @@ for row in st.session_state.inventory_data:
     demand_multiplier = max(0.0, (row["Goal"] - row["Inventory"]) / row["Goal"])
     demand_index = demand_multiplier * 10
     
-    # 2. Automated Scarcity Index Calculation (Inversely proportional to availability limits)
-    # Scaled by a factor of 1000 to cleanly normalize the final priority scores
+    # 2. Automated Scarcity Index Calculation
+    # Accessing keys directly from the dictionary source of truth
     scarcity_index = (1.0 / (row["Weekly Limit"] * row["Global Sources"])) * 1000.0
     
     # 3. Dynamic Modified Gem Value
