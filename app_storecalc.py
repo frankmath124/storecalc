@@ -152,7 +152,7 @@ with tab_event:
     with ev_col2:
         st.markdown("### 🍾 Champagne Bundle Packs Value Mapping")
         champagne_shop = {
-            "Mithril": 3, "hero widget": 10, "g2 widget": 10, "g1 widget": 10, "forgehammer": 10,
+            "mithril": 3, "hero widget": 10, "g2 widget": 10, "g1 widget": 10, "forgehammer": 10,
             "pet medallion": 5, "taming mark advanced": 2, "general mythic shard": 10,
             "artisan vision": 10, "charm design": 10, "charm guide": 10
         }
