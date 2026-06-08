@@ -24,13 +24,20 @@ if "inventory_data" not in st.session_state:
         {"Item": "Mithril", "Inventory": 5, "Goal": 20, "Base Gem Value": 10000, "Weekly Limit": 1, "Global Sources": 1}
     ]
 
-# --- NEW: ENGINE VARIATION CONTROLS ---
-st.sidebar.markdown("## ⚙️ Mathematical Engine Tuning")
-use_demand = st.sidebar.toggle("Apply Demand Index", value=True, help="Toggles scaling based on your current inventory deficits.")
-use_scarcity = st.sidebar.toggle("Apply Scarcity Index", value=True, help="Toggles scaling based on item limits and supply lines.")
-use_weighting = st.sidebar.toggle("Apply Custom Priority Weights", value=True, help="Toggles secondary value weights (e.g., specific event multipliers).")
+# --- UPDATED: MAIN DASHBOARD ENGINE TUNING ---
+st.markdown("### ⚙️ Mathematical Engine Tuning")
+t_col1, t_col2, t_col3, t_col4 = st.columns([1, 1, 1, 1])
 
-hide_completed = st.sidebar.checkbox("Hide Items with 0 Priority", value=True)
+with t_col1:
+    use_demand = st.toggle("Apply Demand Index", value=True, help="Toggles scaling based on your current inventory deficits.")
+with t_col2:
+    use_scarcity = st.toggle("Apply Scarcity Index", value=True, help="Toggles scaling based on item limits and supply lines.")
+with t_col3:
+    use_weighting = st.toggle("Apply Custom Priority Weights", value=True, help="Toggles secondary value weights (e.g., specific event multipliers).")
+with t_col4:
+    hide_completed = st.checkbox("Hide Items with 0 Priority", value=True)
+    
+st.markdown("---")
 
 # Calculate display ledger & IVS simultaneously
 display_ledger_data = []
