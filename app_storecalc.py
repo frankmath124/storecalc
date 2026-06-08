@@ -169,16 +169,16 @@ with tab_event:
         # Structure: "item_key": (quantity_in_pack, ticket_cost)
         champagne_shop = {
             "mithril": (3, 20000),
-            "hero widget": (10, 10000), 
-            "g2 widget": (10, 10000), 
-            "g1 widget": (10, 8000), 
-            "forgehammer": (10, 4000),
-            "pet medallion": (5, 3000), 
-            "taming mark advanced": (2, 3000), 
-            "general mythic shard": (10, 15000),
-            "artisan vision": (10, 5000), 
-            "charm design": (10, 4000), 
-            "charm guide": (10, 4000)
+            "hero widget": (10, 1000), 
+            "g2 widget": (10, 850), 
+            "g1 widget": (10, 700), 
+            "forgehammer": (10, 500),
+            "pet medallion": (5, 1000), 
+            "taming mark advanced": (2, 2000), 
+            "general mythic shard": (10, 1000),
+            "artisan vision": (10, 350), 
+            "charm design": (10, 350), 
+            "charm guide": (10, 350)
         }
         
         champ_res = []
