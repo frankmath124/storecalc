@@ -24,7 +24,7 @@ if "inventory_data" not in st.session_state:
         {"Item": "Mithril", "Inventory": 5, "Goal": 20, "Base Gem Value": 10000, "Weekly Limit": 1, "Global Sources": 1}
     ]
 
-# --- UPDATED: MAIN DASHBOARD ENGINE TUNING ---
+# --- MAIN PANEL ENGINE TUNING CONTROLS ---
 st.markdown("### ⚙️ Mathematical Engine Tuning")
 t_col1, t_col2, t_col3, t_col4 = st.columns([1, 1, 1, 1])
 
@@ -51,7 +51,7 @@ for row in st.session_state.inventory_data:
     scarcity_factor = (1.0 / (row["Weekly Limit"] * row["Global Sources"])) * 1000.0
     log_si_factor = math.log10(max(scarcity_factor, 1.1))
     
-    # Conditional Switch Check: If turned off, overwrite factor with 1.0 (Neutral Multiplier)
+    # Conditional Switch Check
     d_index = demand_factor if use_demand else 1.0
     log_si = log_si_factor if use_scarcity else 1.0
     
@@ -71,7 +71,7 @@ for idx, row in enumerate(edited_inv):
     st.session_state.inventory_data[idx]["Inventory"] = row["Inventory"]
     st.session_state.inventory_data[idx]["Goal"] = row["Goal"]
 
-# Add Background Constants (with custom weighting switch hook)
+# Add Background Constants
 computed_true_values["5 min speedup"] = 0.5
 computed_true_values["1hr speedup"] = 60
 computed_true_values["100 gems"] = 100.0
@@ -84,7 +84,6 @@ computed_true_values["pet medallion"] = 1500
 # =========================================================================
 # NAVIGATION ARCHITECTURE (TABS)
 # =========================================================================
-st.markdown("---")
 tab_std, tab_event = st.tabs(["🏛️ Permanent Shops", "🎪 Limited-Time Event Shops"])
 
 # =========================================================================
@@ -131,8 +130,14 @@ with tab_std:
             res = []
             for item, cost in inventory.items():
                 if item in computed_true_values:
-                    # Check if base gem value or modified score is preferred
-                    raw_val = st.session_state.inventory_data[next(i for i, x in enumerate(st.session_state.inventory_data) if x["Item"].lower() == item)]["Base Gem Value"] if (not use_demand and not use_scarcity) else computed_true_values[item]
+                    # Safe Lookup Step
+                    inv_idx = next((i for i, x in enumerate(st.session_state.inventory_data) if x["Item"].lower() == item), None)
+                    
+                    if (not use_demand and not use_scarcity):
+                        raw_val = st.session_state.inventory_data[inv_idx]["Base Gem Value"] if inv_idx is not None else computed_true_values[item]
+                    else:
+                        raw_val = computed_true_values[item]
+                    
                     score = raw_val / cost
                     if hide_completed and score <= 0: continue
                     res.append({"Item": item.title(), "Cost": cost, "Priority Score": score})
@@ -160,7 +165,15 @@ with tab_event:
         ely_res = []
         for item, cost in elysium_shop.items():
             if item in computed_true_values:
-                score = computed_true_values[item] / cost
+                # Safe Lookup Step
+                inv_idx = next((i for i, x in enumerate(st.session_state.inventory_data) if x["Item"].lower() == item), None)
+                
+                if (not use_demand and not use_scarcity):
+                    raw_val = st.session_state.inventory_data[inv_idx]["Base Gem Value"] if inv_idx is not None else computed_true_values[item]
+                else:
+                    raw_val = computed_true_values[item]
+                    
+                score = raw_val / cost
                 if hide_completed and score <= 0: continue
                 ely_res.append({"Item": item.title(), "Elysium Cost": cost, "Priority Score": score})
                 
@@ -173,7 +186,7 @@ with tab_event:
     with ev_col2:
         st.markdown("### 🍾 Champagne Bundle Packs Value Mapping")
         
-        # Structure: "item_key": (quantity_in_pack, ticket_cost)
+        # Corrected structure with lowercase keys: "item_key": (quantity_in_pack, ticket_cost)
         champagne_shop = {
             "mithril": (3, 20000),
             "hero widget": (10, 1000), 
@@ -191,19 +204,20 @@ with tab_event:
         champ_res = []
         for item, (qty, cost) in champagne_shop.items():
             if item in computed_true_values:
-                # Isolate matching base asset data row for backup
-                inv_row = next((x for x in st.session_state.inventory_data if x["Item"].lower() == item), None)
-                base_gem_val = inv_row["Base Gem Value"] if inv_row else computed_true_values.get(item, 0)
+                # Safe Lookup Step
+                inv_idx = next((i for i, x in enumerate(st.session_state.inventory_data) if x["Item"].lower() == item), None)
                 
-                # Assign core value depending on switch preferences
-                chosen_unit_value = base_gem_val if (not use_demand and not use_scarcity) else computed_true_values[item]
+                if (not use_demand and not use_scarcity):
+                    base_gem_val = st.session_state.inventory_data[inv_idx]["Base Gem Value"] if inv_idx is not None else computed_true_values[item]
+                else:
+                    base_gem_val = computed_true_values[item]
                 
-                # Apply Weighting Index modifier if toggle is engaged
+                # Apply Custom Weighting Index modifier if toggle is engaged
                 if use_weighting:
                     if item == "mithril": 
-                        chosen_unit_value *= 1.25 # Injecting a 25% priority weight modifier
+                        base_gem_val *= 1.25 # Injecting custom priority weight modifier
                 
-                total_bundle_value = chosen_unit_value * qty
+                total_bundle_value = base_gem_val * qty
                 priority_score = total_bundle_value / cost if cost > 0 else 0.0
                 
                 if hide_completed and total_bundle_value <= 0: continue
@@ -221,3 +235,31 @@ with tab_event:
             }, hide_index=True, use_container_width=True)
         else:
             st.info("Champagne value markers hitting zero bounds.")
+
+    st.markdown("---")
+    st.subheader("🌊 Wavebound Voyage Chest Probability Matrix")
+    
+    v_charms_common  = (computed_true_values.get("charm design", 0) * 3) + (computed_true_values.get("100 gems", 0) * 2) + (computed_true_values.get("5 min speedup", 0) * 12)
+    v_charms_premium = (computed_true_values.get("charm design", 0) * 6) + (computed_true_values.get("charm guide", 0) * 3) + (computed_true_values.get("1hr speedup", 0) * 4)
+    v_charms_exq     = (computed_true_values.get("charm design", 0) * 9) + (computed_true_values.get("charm guide", 0) * 9) + (computed_true_values.get("general mythic shard", 0) * 2)
+    v_charms_mythic  = (computed_true_values.get("charm design", 0) * 30) + (computed_true_values.get("charm guide", 0) * 30) + (computed_true_values.get("general mythic shard", 0) * 6)
+    
+    v_gear_common  = (computed_true_values.get("thread", 0) * 14) + (computed_true_values.get("satin", 0) * 900) + (computed_true_values.get("5 min speedup", 0) * 12)
+    v_gear_premium = (computed_true_values.get("thread", 0) * 35) + (computed_true_values.get("satin", 0) * 3500) + (computed_true_values.get("1hr speedup", 0) * 3)
+    v_gear_exq     = (computed_true_values.get("gear chest", 0) * 7) + (computed_true_values.get("artisan vision", 0) * 8) + (computed_true_values.get("general mythic shard", 0) * 2)
+    v_gear_mythic  = (computed_true_values.get("gear chest", 0) * 21) + (computed_true_values.get("artisan vision", 0) * 21) + (computed_true_values.get("general mythic shard", 0) * 6)
+
+    merge_premium_target_charms = ((0.75 * v_charms_exq) + (0.25 * v_charms_mythic)) / 3.0
+    ev_charms_premium = max(v_charms_premium, merge_premium_target_charms)
+    ev_charms_common  = max(v_charms_common, ev_charms_premium / 3.0)
+    
+    merge_premium_target_gear = ((0.75 * v_gear_exq) + (0.25 * v_gear_mythic)) / 3.0
+    ev_gear_premium = max(v_gear_premium, merge_premium_target_gear)
+    ev_gear_common  = max(v_gear_common, ev_gear_premium / 3.0)
+
+    chest_matrix_display = [
+        {"Event Track": "Wavebound Voyage Charms", "Common Chest EV": ev_charms_common, "Premium Chest EV": ev_charms_premium, "Exquisite Chest Value": v_charms_exq, "Mythic Chest Value": v_charms_mythic, "Merge Action Advice": "MERGE FOR EXQ/MYTHIC" if merge_premium_target_charms > v_charms_premium else "OPEN CHORDS IMMEDIATELY"},
+        {"Event Track": "Wavebound Voyage Gov Gear", "Common Chest EV": ev_gear_common, "Premium Chest EV": ev_gear_premium, "Exquisite Chest Value": v_gear_exq, "Mythic Chest Value": v_gear_mythic, "Merge Action Advice": "MERGE FOR EXQ/MYTHIC" if merge_premium_target_gear > v_gear_premium else "OPEN CHORDS IMMEDIATELY"}
+    ]
+    
+    st.table(pd.DataFrame(chest_matrix_display).set_index("Event Track"))
