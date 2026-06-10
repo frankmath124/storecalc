@@ -102,7 +102,7 @@ with tab_std:
         },
         "Arena Shop (Arena Tokens)": {
             "mythic hero gear": 12500, "forgehammer": 2500, "general mythic shard": 2500,
-            "pet medallion": 2400, "taming mark advanced": 4800, "Mithril";,10000
+            "pet medallion": 2400, "taming mark advanced": 4800, "Mithril": 10000
         },
         "Kingdom of Power Shop (KVK Coins)": {
             "truegold": 2, "general mythic shard": 25, "artisan vision": 6,
