@@ -80,6 +80,7 @@ computed_true_values["g1 widget"] = 3600
 computed_true_values["g2 widget"] = 4500
 computed_true_values["taming mark advanced"] = 4500.0
 computed_true_values["pet medallion"] = 1500
+computed_true_values["mythic hero gear"] = 250000.0
 
 # =========================================================================
 # NAVIGATION ARCHITECTURE (TABS)
@@ -102,7 +103,7 @@ with tab_std:
         },
         "Arena Shop (Arena Tokens)": {
             "mythic hero gear": 12500, "forgehammer": 2500, "general mythic shard": 2500,
-            "pet medallion": 2400, "taming mark advanced": 4800, "Mithril": 10000
+            "pet medallion": 2400, "taming mark advanced": 4800, "mithril": 10000
         },
         "Kingdom of Power Shop (KVK Coins)": {
             "truegold": 2, "general mythic shard": 25, "artisan vision": 6,
