@@ -242,19 +242,18 @@ with tab_event:
         
         # Mapped to match base item strings in your IVS dictionary
         adventure_stall = [
-            {"name": "mithril (hot)", "base_key": "mithril", "qty": 37, "cost": 30},
-            {"name": "charm design (hot)", "base_key": "charm design", "qty": 10, "cost": 50},
+            {"name": "truegold (hot)", "base_key": "truegold", "qty": 37, "cost": 30},
+            {"name": "General Mythic Shard (hot)", "base_key": "general mythic shard", "qty": 10, "cost": 50},
             {"name": "forgehammer (hot)", "base_key": "forgehammer", "qty": 45, "cost": 100},
             {"name": "forgehammer (standard)", "base_key": "forgehammer", "qty": 18, "cost": 50},
-            {"name": "mithril (standard)", "base_key": "mithril", "qty": 10, "cost": 10},
-            {"name": "mythic hero shard chest", "base_key": "general mythic shard", "qty": 1, "cost": 160},
-            {"name": "charm guide", "base_key": "charm guide", "qty": 16, "cost": 20},
+            {"name": "mithril (standard)", "base_key": "mithril", "qty": 1, "cost": 40},
+            {"name": "charm guide", "base_key": "charm guide", "qty": 15, "cost": 20},
+            {"name": "charm design", "base_key": "charm design", "qty": 15, "cost": 20},
+            {"name": "artisan vision", "base_key": "artisans", "qty": 16, "cost": 20},
             {"name": "governor thread", "base_key": "thread", "qty": 75, "cost": 20},
             {"name": "governor satin", "base_key": "satin", "qty": 7500, "cost": 20},
-            {"name": "1hr general speedup", "base_key": "1hr speedup", "qty": 5, "cost": 10},
-            {"name": "1hr research speedup", "base_key": "1hr speedup", "qty": 5, "cost": 10},
-            {"name": "1hr training speedup", "base_key": "1hr speedup", "qty": 5, "cost": 10},
-            {"name": "5min general speedup", "base_key": "5 min speedup", "qty": 5, "cost": 1}
+            {"name": "Advanced Taming Mark", "base_key": "taming mark advanced", "qty": 7, "cost": 100},
+            {"name": "Pet Chest", "base_key": "pet chest", "qty": 5, "cost": 25},
         ]
         
         adv_res = []
