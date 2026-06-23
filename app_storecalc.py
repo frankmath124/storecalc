@@ -155,10 +155,10 @@ with tab_std:
 with tab_event:
     st.subheader("🎪 Active Special Event Operations")
     
-    ev_col1, ev_col2 = st.columns([1, 1])
+    ev_col1, ev_col2, ev_col3 = st.columns(3)
     
     with ev_col1:
-        st.markdown("### 🏆 Elysium Shop Exchange Priority")
+        st.markdown("### 🏆 Elysium Shop")
         elysium_shop = {
             "forgehammer": 40, "artisan vision": 15, "charm design": 22, 
             "charm guide": 22, "truegold": 15, "gear chest": 42, "general mythic shard": 75
@@ -185,7 +185,7 @@ with tab_event:
             st.info("Elysium goals fully finalized.")
 
     with ev_col2:
-        st.markdown("### 🍾 Champagne Bundle Packs Value Mapping")
+        st.markdown("### 🍾 Champagne Bundles")
         
         # Corrected structure with lowercase keys: "item_key": (quantity_in_pack, ticket_cost)
         champagne_shop = {
@@ -236,6 +236,62 @@ with tab_event:
             }, hide_index=True, use_container_width=True)
         else:
             st.info("Champagne value markers hitting zero bounds.")
+
+    with ev_col3:
+        st.markdown("### ⛺ Adventure Stall")
+        
+        # Mapped to match base item strings in your IVS dictionary
+        adventure_stall = [
+            {"name": "mithril (hot)", "base_key": "mithril", "qty": 37, "cost": 30},
+            {"name": "charm design (hot)", "base_key": "charm design", "qty": 10, "cost": 50},
+            {"name": "forgehammer (hot)", "base_key": "forgehammer", "qty": 45, "cost": 100},
+            {"name": "forgehammer (standard)", "base_key": "forgehammer", "qty": 18, "cost": 50},
+            {"name": "mithril (standard)", "base_key": "mithril", "qty": 10, "cost": 10},
+            {"name": "mythic hero shard chest", "base_key": "general mythic shard", "qty": 1, "cost": 160},
+            {"name": "charm guide", "base_key": "charm guide", "qty": 16, "cost": 20},
+            {"name": "governor thread", "base_key": "thread", "qty": 75, "cost": 20},
+            {"name": "governor satin", "base_key": "satin", "qty": 7500, "cost": 20},
+            {"name": "1hr general speedup", "base_key": "1hr speedup", "qty": 5, "cost": 10},
+            {"name": "1hr research speedup", "base_key": "1hr speedup", "qty": 5, "cost": 10},
+            {"name": "1hr training speedup", "base_key": "1hr speedup", "qty": 5, "cost": 10},
+            {"name": "5min general speedup", "base_key": "5 min speedup", "qty": 5, "cost": 1}
+        ]
+        
+        adv_res = []
+        for deal in adventure_stall:
+            item = deal["base_key"]
+            if item in computed_true_values:
+                # Safe Lookup Step
+                inv_idx = next((i for i, x in enumerate(st.session_state.inventory_data) if x["Item"].lower() == item), None)
+                
+                if (not use_demand and not use_scarcity):
+                    base_gem_val = st.session_state.inventory_data[inv_idx]["Base Gem Value"] if inv_idx is not None else computed_true_values[item]
+                else:
+                    base_gem_val = computed_true_values[item]
+                
+                # Apply Custom Weighting Index modifier if toggle is engaged
+                if use_weighting:
+                    if item == "mithril": 
+                        base_gem_val *= 1.25 
+                
+                total_bundle_value = base_gem_val * deal["qty"]
+                priority_score = total_bundle_value / deal["cost"] if deal["cost"] > 0 else 0.0
+                
+                if hide_completed and total_bundle_value <= 0: continue
+                adv_res.append({
+                    "Deal": deal["name"].title(), "Qty": deal["qty"], "Shells": deal["cost"],
+                    "Total Value": total_bundle_value, "Priority Score": priority_score
+                })
+                
+        if adv_res:
+            df_adv = pd.DataFrame(adv_res).sort_values(by="Priority Score", ascending=False)
+            st.dataframe(df_adv, column_config={
+                "Shells": st.column_config.NumberColumn("Shells", format="%d"),
+                "Total Value": st.column_config.NumberColumn("Total Value", format="%.0f"),
+                "Priority Score": st.column_config.ProgressColumn("Priority Score", format="%.2f", min_value=0, max_value=float(df_adv["Priority Score"].max() if not df_adv.empty else 1.0))
+            }, hide_index=True, use_container_width=True)
+        else:
+            st.info("Adventure Stall value markers hitting zero.")
 
     st.markdown("---")
     st.subheader("🌊 Wavebound Voyage Chest Probability Matrix")
